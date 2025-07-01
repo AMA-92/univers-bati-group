@@ -6,6 +6,15 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { 
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
 import { useAdmin } from '@/contexts/AdminContext';
 import { useToast } from '@/hooks/use-toast';
 import { 
@@ -16,8 +25,23 @@ import {
   MapPin, 
   Building, 
   Image,
-  Save
+  Save,
+  FolderOpen,
+  Plus,
+  Edit,
+  Trash
 } from 'lucide-react';
+
+interface Project {
+  id: number;
+  title: string;
+  category: string;
+  location: string;
+  year: string;
+  description: string;
+  image: string;
+  details: string[];
+}
 
 const AdminDashboard = () => {
   const { isAdminLoggedIn, siteSettings, logout, updateSiteSettings } = useAdmin();
@@ -25,6 +49,60 @@ const AdminDashboard = () => {
   const navigate = useNavigate();
   
   const [formData, setFormData] = useState(siteSettings);
+  const [projects, setProjects] = useState<Project[]>([
+    {
+      id: 1,
+      title: "Construction Résidence Les Jardins",
+      category: "gros-oeuvre",
+      location: "Paris 15ème",
+      year: "2023",
+      description: "Construction complète d'une résidence de 24 logements avec parkings souterrains.",
+      image: "https://images.unsplash.com/photo-1487958449943-2429e8be8625?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+      details: ["Surface: 2,400 m²", "24 logements", "Parking 30 places", "Espaces verts"]
+    },
+    {
+      id: 2,
+      title: "Rénovation Hôtel Particulier",
+      category: "second-oeuvre",
+      location: "Neuilly-sur-Seine",
+      year: "2023",
+      description: "Rénovation complète d'un hôtel particulier du 19ème siècle.",
+      image: "https://images.unsplash.com/photo-1518005020951-eccb494ad742?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+      details: ["Surface: 450 m²", "5 chambres", "Système domotique", "Matériaux nobles"]
+    },
+    {
+      id: 3,
+      title: "Aménagement Bureau Design",
+      category: "finition",
+      location: "La Défense",
+      year: "2024",
+      description: "Aménagement moderne d'espaces de bureaux avec finitions haut de gamme.",
+      image: "https://images.unsplash.com/photo-1496307653780-42ee777d4833?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+      details: ["Surface: 1,200 m²", "200 postes de travail", "Salles de réunion", "Espace détente"]
+    },
+    {
+      id: 4,
+      title: "Relevé Topographique Zone Industrielle",
+      category: "geomatique",
+      location: "Roissy",
+      year: "2024",
+      description: "Relevé précis et modélisation 3D d'une zone industrielle de 50 hectares.",
+      image: "https://images.unsplash.com/photo-1459767129954-1b1c1f9b9ace?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+      details: ["50 hectares", "Précision centimétrique", "Modèle 3D", "Cartographie numérique"]
+    }
+  ]);
+
+  const [editingProject, setEditingProject] = useState<Project | null>(null);
+  const [isAddingProject, setIsAddingProject] = useState(false);
+  const [newProject, setNewProject] = useState<Omit<Project, 'id'>>({
+    title: '',
+    category: 'gros-oeuvre',
+    location: '',
+    year: '',
+    description: '',
+    image: '',
+    details: []
+  });
 
   if (!isAdminLoggedIn) {
     navigate('/admin/login');
@@ -53,6 +131,59 @@ const AdminDashboard = () => {
       ...prev,
       [field]: value
     }));
+  };
+
+  const handleAddProject = () => {
+    const id = Math.max(...projects.map(p => p.id)) + 1;
+    setProjects(prev => [...prev, { ...newProject, id }]);
+    setNewProject({
+      title: '',
+      category: 'gros-oeuvre',
+      location: '',
+      year: '',
+      description: '',
+      image: '',
+      details: []
+    });
+    setIsAddingProject(false);
+    toast({
+      title: "Projet ajouté",
+      description: "Le nouveau projet a été ajouté avec succès",
+    });
+  };
+
+  const handleEditProject = (project: Project) => {
+    setEditingProject(project);
+  };
+
+  const handleUpdateProject = () => {
+    if (editingProject) {
+      setProjects(prev => prev.map(p => p.id === editingProject.id ? editingProject : p));
+      setEditingProject(null);
+      toast({
+        title: "Projet modifié",
+        description: "Le projet a été modifié avec succès",
+      });
+    }
+  };
+
+  const handleDeleteProject = (id: number) => {
+    setProjects(prev => prev.filter(p => p.id !== id));
+    toast({
+      title: "Projet supprimé",
+      description: "Le projet a été supprimé avec succès",
+    });
+  };
+
+  const categories = [
+    { id: 'gros-oeuvre', label: 'Gros Œuvre' },
+    { id: 'second-oeuvre', label: 'Second Œuvre' },
+    { id: 'finition', label: 'Travaux de Finition' },
+    { id: 'geomatique', label: 'Géomatique' }
+  ];
+
+  const getProjectsByCategory = (category: string) => {
+    return projects.filter(project => project.category === category);
   };
 
   return (
@@ -86,7 +217,7 @@ const AdminDashboard = () => {
 
       {/* Contenu principal */}
       <main className="container mx-auto px-4 py-8">
-        <div className="max-w-4xl mx-auto space-y-8">
+        <div className="max-w-6xl mx-auto space-y-8">
           
           {/* Informations de l'entreprise */}
           <Card>
@@ -230,7 +361,206 @@ const AdminDashboard = () => {
             </CardContent>
           </Card>
 
-          {/* Bouton de sauvegarde */}
+          {/* Gestion des Catalogues */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-2">
+                <FolderOpen size={20} />
+                <span>Gestion des Catalogues</span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Tabs defaultValue="gros-oeuvre" className="w-full">
+                <TabsList className="grid w-full grid-cols-4">
+                  {categories.map((category) => (
+                    <TabsTrigger key={category.id} value={category.id}>
+                      {category.label}
+                    </TabsTrigger>
+                  ))}
+                </TabsList>
+                
+                {categories.map((category) => (
+                  <TabsContent key={category.id} value={category.id} className="space-y-4">
+                    <div className="flex justify-between items-center">
+                      <h3 className="text-lg font-semibold">{category.label}</h3>
+                      <Button 
+                        onClick={() => {
+                          setNewProject(prev => ({ ...prev, category: category.id }));
+                          setIsAddingProject(true);
+                        }}
+                        className="bg-ubg-orange-500 hover:bg-ubg-orange-600"
+                      >
+                        <Plus size={16} className="mr-2" />
+                        Ajouter un projet
+                      </Button>
+                    </div>
+                    
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Titre</TableHead>
+                          <TableHead>Localisation</TableHead>
+                          <TableHead>Année</TableHead>
+                          <TableHead>Actions</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {getProjectsByCategory(category.id).map((project) => (
+                          <TableRow key={project.id}>
+                            <TableCell className="font-medium">{project.title}</TableCell>
+                            <TableCell>{project.location}</TableCell>
+                            <TableCell>{project.year}</TableCell>
+                            <TableCell>
+                              <div className="flex space-x-2">
+                                <Button 
+                                  size="sm" 
+                                  variant="outline"
+                                  onClick={() => handleEditProject(project)}
+                                >
+                                  <Edit size={14} />
+                                </Button>
+                                <Button 
+                                  size="sm" 
+                                  variant="destructive"
+                                  onClick={() => handleDeleteProject(project.id)}
+                                >
+                                  <Trash size={14} />
+                                </Button>
+                              </div>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </TabsContent>
+                ))}
+              </Tabs>
+            </CardContent>
+          </Card>
+
+          {/* Formulaire d'ajout de projet */}
+          {isAddingProject && (
+            <Card>
+              <CardHeader>
+                <CardTitle>Ajouter un nouveau projet</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="newTitle">Titre</Label>
+                    <Input
+                      id="newTitle"
+                      value={newProject.title}
+                      onChange={(e) => setNewProject(prev => ({ ...prev, title: e.target.value }))}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="newLocation">Localisation</Label>
+                    <Input
+                      id="newLocation"
+                      value={newProject.location}
+                      onChange={(e) => setNewProject(prev => ({ ...prev, location: e.target.value }))}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="newYear">Année</Label>
+                    <Input
+                      id="newYear"
+                      value={newProject.year}
+                      onChange={(e) => setNewProject(prev => ({ ...prev, year: e.target.value }))}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="newImage">URL de l'image</Label>
+                    <Input
+                      id="newImage"
+                      value={newProject.image}
+                      onChange={(e) => setNewProject(prev => ({ ...prev, image: e.target.value }))}
+                    />
+                  </div>
+                </div>
+                <div>
+                  <Label htmlFor="newDescription">Description</Label>
+                  <Textarea
+                    id="newDescription"
+                    value={newProject.description}
+                    onChange={(e) => setNewProject(prev => ({ ...prev, description: e.target.value }))}
+                  />
+                </div>
+                <div className="flex space-x-4">
+                  <Button onClick={handleAddProject} className="bg-ubg-orange-500 hover:bg-ubg-orange-600">
+                    Ajouter
+                  </Button>
+                  <Button variant="outline" onClick={() => setIsAddingProject(false)}>
+                    Annuler
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Formulaire d'édition de projet */}
+          {editingProject && (
+            <Card>
+              <CardHeader>
+                <CardTitle>Modifier le projet</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="editTitle">Titre</Label>
+                    <Input
+                      id="editTitle"
+                      value={editingProject.title}
+                      onChange={(e) => setEditingProject(prev => prev ? { ...prev, title: e.target.value } : null)}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="editLocation">Localisation</Label>
+                    <Input
+                      id="editLocation"
+                      value={editingProject.location}
+                      onChange={(e) => setEditingProject(prev => prev ? { ...prev, location: e.target.value } : null)}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="editYear">Année</Label>
+                    <Input
+                      id="editYear"
+                      value={editingProject.year}
+                      onChange={(e) => setEditingProject(prev => prev ? { ...prev, year: e.target.value } : null)}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="editImage">URL de l'image</Label>
+                    <Input
+                      id="editImage"
+                      value={editingProject.image}
+                      onChange={(e) => setEditingProject(prev => prev ? { ...prev, image: e.target.value } : null)}
+                    />
+                  </div>
+                </div>
+                <div>
+                  <Label htmlFor="editDescription">Description</Label>
+                  <Textarea
+                    id="editDescription"
+                    value={editingProject.description}
+                    onChange={(e) => setEditingProject(prev => prev ? { ...prev, description: e.target.value } : null)}
+                  />
+                </div>
+                <div className="flex space-x-4">
+                  <Button onClick={handleUpdateProject} className="bg-ubg-orange-500 hover:bg-ubg-orange-600">
+                    Modifier
+                  </Button>
+                  <Button variant="outline" onClick={() => setEditingProject(null)}>
+                    Annuler
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Bouton de sauvegarde général */}
           <div className="flex justify-center pt-6">
             <Button 
               onClick={handleSave}
