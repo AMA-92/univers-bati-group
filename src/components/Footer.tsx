@@ -1,13 +1,16 @@
 
 import { Phone, Mail } from 'lucide-react';
+import { useAdmin } from '@/contexts/AdminContext';
 
 const Footer = () => {
+  const { siteSettings } = useAdmin();
+
   const handleWhatsApp = () => {
-    window.open('https://wa.me/33123456789', '_blank');
+    window.open(siteSettings.whatsapp, '_blank');
   };
 
   const handlePhone = () => {
-    window.open('tel:+33123456789', '_blank');
+    window.open(`tel:${siteSettings.phone}`, '_blank');
   };
 
   return (
@@ -17,8 +20,8 @@ const Footer = () => {
           {/* Logo et description */}
           <div className="col-span-2">
             <img 
-              src="/lovable-uploads/aecf2a1e-ca1c-4c7d-82df-341c4b5a917f.png" 
-              alt="Univers Bâti Groupe" 
+              src={siteSettings.logo}
+              alt={siteSettings.companyName}
               className="h-16 w-auto mb-4 bg-white p-2 rounded"
             />
             <p className="text-ubg-gray-300 mb-4">
@@ -59,18 +62,22 @@ const Footer = () => {
             <div className="space-y-3 text-ubg-gray-300">
               <div className="flex items-center space-x-2">
                 <Phone size={16} />
-                <span>+33 1 23 45 67 89</span>
+                <span>{siteSettings.phone}</span>
               </div>
               <div className="flex items-center space-x-2">
                 <Mail size={16} />
                 <span>WhatsApp</span>
+              </div>
+              <div className="text-sm">
+                <p>{siteSettings.address}</p>
+                <p>{siteSettings.postalCode} {siteSettings.city}</p>
               </div>
             </div>
           </div>
         </div>
 
         <div className="border-t border-ubg-gray-700 mt-8 pt-8 text-center text-ubg-gray-400">
-          <p>&copy; 2024 Univers Bâti Groupe. Tous droits réservés.</p>
+          <p>&copy; 2024 {siteSettings.companyName}. Tous droits réservés.</p>
         </div>
       </div>
     </footer>

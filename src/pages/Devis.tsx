@@ -22,22 +22,36 @@ const Devis = () => {
     ville: '',
     codePostal: '',
     typeProjet: '',
-    services: [],
-    description: '',
+    surface: '',
     budget: '',
     delai: '',
-    contactPreferentiel: ''
+    description: '',
+    accepteConditions: false
   });
+
+  const handleInputChange = (field: string, value: string | boolean) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
+    if (!formData.accepteConditions) {
+      toast({
+        title: "Erreur",
+        description: "Vous devez accepter les conditions générales",
+        variant: "destructive"
+      });
+      return;
+    }
+
     // Simulation de l'envoi du devis
-    console.log('Demande de devis:', formData);
-    
     toast({
-      title: "Demande envoyée !",
-      description: "Nous vous contacterons dans les 24h pour étudier votre projet.",
+      title: "Demande envoyée",
+      description: "Votre demande de devis a été envoyée avec succès. Nous vous recontacterons sous 48h.",
     });
 
     // Reset du formulaire
@@ -50,29 +64,33 @@ const Devis = () => {
       ville: '',
       codePostal: '',
       typeProjet: '',
-      services: [],
-      description: '',
+      surface: '',
       budget: '',
       delai: '',
-      contactPreferentiel: ''
+      description: '',
+      accepteConditions: false
     });
   };
 
-  const handleServiceChange = (service: string, checked: boolean) => {
-    setFormData(prev => ({
-      ...prev,
-      services: checked 
-        ? [...prev.services, service]
-        : prev.services.filter(s => s !== service)
-    }));
-  };
+  const typesProjet = [
+    'Construction neuve',
+    'Rénovation complète',
+    'Extension',
+    'Aménagement intérieur',
+    'Travaux de toiture',
+    'Isolation',
+    'Plomberie',
+    'Électricité',
+    'Autres'
+  ];
 
-  const services = [
-    'Gros Œuvre',
-    'Second Œuvre', 
-    'Travaux de Finition',
-    'Travaux Publics',
-    'Géomatique'
+  const budgetRanges = [
+    'Moins de 10 000€',
+    '10 000€ - 25 000€',
+    '25 000€ - 50 000€',
+    '50 000€ - 100 000€',
+    '100 000€ - 200 000€',
+    'Plus de 200 000€'
   ];
 
   return (
@@ -83,10 +101,9 @@ const Devis = () => {
       <section className="bg-gradient-to-r from-ubg-orange-500 to-ubg-orange-600 py-16 text-white">
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto text-center">
-            <h1 className="text-4xl md:text-5xl font-bold mb-6">Demander un Devis</h1>
+            <h1 className="text-4xl md:text-5xl font-bold mb-6">Demande de Devis Gratuit</h1>
             <p className="text-xl opacity-90">
-              Obtenez une estimation personnalisée pour votre projet en quelques minutes.
-              Notre équipe vous recontactera sous 24h.
+              Décrivez-nous votre projet et recevez une estimation personnalisée sous 48h
             </p>
           </div>
         </div>
@@ -96,20 +113,20 @@ const Devis = () => {
       <section className="py-16">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
-            <Card className="border-0 shadow-xl">
-              <CardHeader className="text-center">
-                <CardTitle className="text-2xl text-ubg-gray-900">
-                  Formulaire de Demande de Devis
+            <Card className="shadow-2xl border-0">
+              <CardHeader className="bg-ubg-gray-50">
+                <CardTitle className="text-3xl text-center text-ubg-gray-900">
+                  Votre Projet en Détail
                 </CardTitle>
-                <p className="text-ubg-gray-600">
-                  Remplissez ce formulaire pour recevoir votre devis personnalisé gratuit
+                <p className="text-center text-ubg-gray-600 mt-2">
+                  Remplissez ce formulaire pour recevoir un devis personnalisé
                 </p>
               </CardHeader>
               <CardContent className="p-8">
                 <form onSubmit={handleSubmit} className="space-y-8">
                   {/* Informations personnelles */}
-                  <div className="space-y-6">
-                    <h3 className="text-lg font-bold text-ubg-gray-900 border-b border-ubg-orange-500 pb-2">
+                  <div>
+                    <h3 className="text-xl font-semibold text-ubg-gray-900 mb-4 pb-2 border-b border-ubg-orange-200">
                       Vos Informations
                     </h3>
                     <div className="grid md:grid-cols-2 gap-6">
@@ -118,7 +135,7 @@ const Devis = () => {
                         <Input
                           id="prenom"
                           value={formData.prenom}
-                          onChange={(e) => setFormData({...formData, prenom: e.target.value})}
+                          onChange={(e) => handleInputChange('prenom', e.target.value)}
                           required
                           className="mt-1"
                         />
@@ -128,7 +145,7 @@ const Devis = () => {
                         <Input
                           id="nom"
                           value={formData.nom}
-                          onChange={(e) => setFormData({...formData, nom: e.target.value})}
+                          onChange={(e) => handleInputChange('nom', e.target.value)}
                           required
                           className="mt-1"
                         />
@@ -139,7 +156,7 @@ const Devis = () => {
                           id="email"
                           type="email"
                           value={formData.email}
-                          onChange={(e) => setFormData({...formData, email: e.target.value})}
+                          onChange={(e) => handleInputChange('email', e.target.value)}
                           required
                           className="mt-1"
                         />
@@ -150,7 +167,7 @@ const Devis = () => {
                           id="telephone"
                           type="tel"
                           value={formData.telephone}
-                          onChange={(e) => setFormData({...formData, telephone: e.target.value})}
+                          onChange={(e) => handleInputChange('telephone', e.target.value)}
                           required
                           className="mt-1"
                         />
@@ -159,199 +176,180 @@ const Devis = () => {
                   </div>
 
                   {/* Adresse du projet */}
-                  <div className="space-y-6">
-                    <h3 className="text-lg font-bold text-ubg-gray-900 border-b border-ubg-orange-500 pb-2">
+                  <div>
+                    <h3 className="text-xl font-semibold text-ubg-gray-900 mb-4 pb-2 border-b border-ubg-orange-200">
                       Localisation du Projet
                     </h3>
-                    <div className="space-y-4">
-                      <div>
-                        <Label htmlFor="adresse">Adresse complète *</Label>
+                    <div className="grid md:grid-cols-3 gap-6">
+                      <div className="md:col-span-2">
+                        <Label htmlFor="adresse">Adresse *</Label>
                         <Input
                           id="adresse"
                           value={formData.adresse}
-                          onChange={(e) => setFormData({...formData, adresse: e.target.value})}
+                          onChange={(e) => handleInputChange('adresse', e.target.value)}
                           required
                           className="mt-1"
                         />
                       </div>
-                      <div className="grid md:grid-cols-2 gap-4">
-                        <div>
-                          <Label htmlFor="ville">Ville *</Label>
-                          <Input
-                            id="ville"
-                            value={formData.ville}
-                            onChange={(e) => setFormData({...formData, ville: e.target.value})}
-                            required
-                            className="mt-1"
-                          />
-                        </div>
-                        <div>
-                          <Label htmlFor="codePostal">Code Postal *</Label>
-                          <Input
-                            id="codePostal"
-                            value={formData.codePostal}
-                            onChange={(e) => setFormData({...formData, codePostal: e.target.value})}
-                            required
-                            className="mt-1"
-                          />
-                        </div>
+                      <div>
+                        <Label htmlFor="codePostal">Code Postal *</Label>
+                        <Input
+                          id="codePostal"
+                          value={formData.codePostal}
+                          onChange={(e) => handleInputChange('codePostal', e.target.value)}
+                          required
+                          className="mt-1"
+                        />
+                      </div>
+                      <div className="md:col-span-3">
+                        <Label htmlFor="ville">Ville *</Label>
+                        <Input
+                          id="ville"
+                          value={formData.ville}
+                          onChange={(e) => handleInputChange('ville', e.target.value)}
+                          required
+                          className="mt-1"
+                        />
                       </div>
                     </div>
                   </div>
 
                   {/* Détails du projet */}
-                  <div className="space-y-6">
-                    <h3 className="text-lg font-bold text-ubg-gray-900 border-b border-ubg-orange-500 pb-2">
+                  <div>
+                    <h3 className="text-xl font-semibold text-ubg-gray-900 mb-4 pb-2 border-b border-ubg-orange-200">
                       Votre Projet
                     </h3>
-                    <div className="space-y-4">
+                    <div className="grid md:grid-cols-2 gap-6">
                       <div>
                         <Label htmlFor="typeProjet">Type de projet *</Label>
-                        <Select onValueChange={(value) => setFormData({...formData, typeProjet: value})}>
+                        <Select value={formData.typeProjet} onValueChange={(value) => handleInputChange('typeProjet', value)}>
                           <SelectTrigger className="mt-1">
                             <SelectValue placeholder="Sélectionnez le type de projet" />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="construction-neuve">Construction neuve</SelectItem>
-                            <SelectItem value="renovation">Rénovation</SelectItem>
-                            <SelectItem value="extension">Extension</SelectItem>
-                            <SelectItem value="amenagement">Aménagement</SelectItem>
-                            <SelectItem value="travaux-publics">Travaux publics</SelectItem>
-                            <SelectItem value="expertise">Expertise géomatique</SelectItem>
+                            {typesProjet.map((type) => (
+                              <SelectItem key={type} value={type}>
+                                {type}
+                              </SelectItem>
+                            ))}
                           </SelectContent>
                         </Select>
                       </div>
-
                       <div>
-                        <Label>Services demandés *</Label>
-                        <div className="grid md:grid-cols-3 gap-4 mt-2">
-                          {services.map((service) => (
-                            <div key={service} className="flex items-center space-x-2">
-                              <Checkbox
-                                id={service}
-                                onCheckedChange={(checked) => handleServiceChange(service, checked)}
-                              />
-                              <Label htmlFor={service} className="text-sm">{service}</Label>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-
-                      <div>
-                        <Label htmlFor="description">Description détaillée du projet *</Label>
-                        <Textarea
-                          id="description"
-                          rows={5}
-                          value={formData.description}
-                          onChange={(e) => setFormData({...formData, description: e.target.value})}
-                          placeholder="Décrivez votre projet en détail : surface, contraintes, matériaux souhaités, etc."
-                          required
+                        <Label htmlFor="surface">Surface (m²)</Label>
+                        <Input
+                          id="surface"
+                          type="number"
+                          value={formData.surface}
+                          onChange={(e) => handleInputChange('surface', e.target.value)}
                           className="mt-1"
                         />
                       </div>
-
-                      <div className="grid md:grid-cols-2 gap-4">
-                        <div>
-                          <Label htmlFor="budget">Budget prévisionnel</Label>
-                          <Select onValueChange={(value) => setFormData({...formData, budget: value})}>
-                            <SelectTrigger className="mt-1">
-                              <SelectValue placeholder="Sélectionnez votre budget" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="10000-25000">10 000 € - 25 000 €</SelectItem>
-                              <SelectItem value="25000-50000">25 000 € - 50 000 €</SelectItem>
-                              <SelectItem value="50000-100000">50 000 € - 100 000 €</SelectItem>
-                              <SelectItem value="100000-250000">100 000 € - 250 000 €</SelectItem>
-                              <SelectItem value="250000+">Plus de 250 000 €</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div>
-                        <div>
-                          <Label htmlFor="delai">Délai souhaité</Label>
-                          <Select onValueChange={(value) => setFormData({...formData, delai: value})}>
-                            <SelectTrigger className="mt-1">
-                              <SelectValue placeholder="Quand souhaitez-vous démarrer ?" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="urgent">Urgent (moins d'1 mois)</SelectItem>
-                              <SelectItem value="1-3mois">1 à 3 mois</SelectItem>
-                              <SelectItem value="3-6mois">3 à 6 mois</SelectItem>
-                              <SelectItem value="6mois+">Plus de 6 mois</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div>
-                      </div>
-
                       <div>
-                        <Label htmlFor="contactPreferentiel">Mode de contact préféré *</Label>
-                        <Select onValueChange={(value) => setFormData({...formData, contactPreferentiel: value})}>
+                        <Label htmlFor="budget">Budget prévisionnel</Label>
+                        <Select value={formData.budget} onValueChange={(value) => handleInputChange('budget', value)}>
                           <SelectTrigger className="mt-1">
-                            <SelectValue placeholder="Comment préférez-vous être contacté ?" />
+                            <SelectValue placeholder="Sélectionnez votre budget" />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="telephone">Téléphone</SelectItem>
-                            <SelectItem value="whatsapp">WhatsApp</SelectItem>
-                            <SelectItem value="email">Email</SelectItem>
+                            {budgetRanges.map((range) => (
+                              <SelectItem key={range} value={range}>
+                                {range}
+                              </SelectItem>
+                            ))}
                           </SelectContent>
                         </Select>
+                      </div>
+                      <div>
+                        <Label htmlFor="delai">Délai souhaité</Label>
+                        <Input
+                          id="delai"
+                          value={formData.delai}
+                          onChange={(e) => handleInputChange('delai', e.target.value)}
+                          placeholder="Ex: Dans 3 mois"
+                          className="mt-1"
+                        />
                       </div>
                     </div>
                   </div>
 
+                  {/* Description détaillée */}
+                  <div>
+                    <Label htmlFor="description">Description détaillée de votre projet *</Label>
+                    <Textarea
+                      id="description"
+                      value={formData.description}
+                      onChange={(e) => handleInputChange('description', e.target.value)}
+                      rows={6}
+                      required
+                      className="mt-1"
+                      placeholder="Décrivez votre projet en détail : objectifs, contraintes, préférences..."
+                    />
+                  </div>
+
+                  {/* Conditions générales */}
+                  <div className="flex items-center space-x-2">
+                    <Checkbox
+                      id="conditions"
+                      checked={formData.accepteConditions}
+                      onCheckedChange={(checked) => handleInputChange('accepteConditions', checked === true)}
+                    />
+                    <Label htmlFor="conditions" className="text-sm">
+                      J'accepte les conditions générales et la politique de confidentialité *
+                    </Label>
+                  </div>
+
+                  {/* Bouton de soumission */}
                   <div className="text-center pt-6">
                     <Button 
                       type="submit" 
-                      size="lg" 
-                      className="bg-ubg-orange-500 hover:bg-ubg-orange-600 px-12 py-3 text-lg"
+                      className="bg-ubg-orange-500 hover:bg-ubg-orange-600 text-white px-12 py-3 text-lg"
                     >
-                      Envoyer ma Demande de Devis
+                      Envoyer ma Demande
                     </Button>
                     <p className="text-sm text-ubg-gray-500 mt-4">
-                      * Champs obligatoires - Nous vous recontacterons sous 24h
+                      * Champs obligatoires. Réponse garantie sous 48h.
                     </p>
                   </div>
                 </form>
               </CardContent>
             </Card>
-          </div>
-        </div>
-      </section>
 
-      {/* Avantages */}
-      <section className="py-16 bg-ubg-gray-50">
-        <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto">
-            <h2 className="text-3xl font-bold text-center text-ubg-gray-900 mb-12">
-              Pourquoi Demander un Devis ?
-            </h2>
-            <div className="grid md:grid-cols-3 gap-8">
-              <Card className="border-0 shadow-lg text-center">
+            {/* Informations complémentaires */}
+            <div className="grid md:grid-cols-3 gap-6 mt-12">
+              <Card className="text-center border-0 shadow-lg">
                 <CardContent className="p-6">
                   <div className="w-16 h-16 bg-ubg-orange-500 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <span className="text-white text-xl font-bold">100%</span>
+                    <span className="text-2xl font-bold text-white">48h</span>
                   </div>
-                  <h3 className="text-lg font-bold text-ubg-gray-900 mb-2">Gratuit</h3>
-                  <p className="text-ubg-gray-600">Aucun engagement, devis entièrement gratuit</p>
+                  <h3 className="font-bold text-ubg-gray-900 mb-2">Réponse Rapide</h3>
+                  <p className="text-ubg-gray-600 text-sm">
+                    Nous nous engageons à vous répondre sous 48h maximum
+                  </p>
                 </CardContent>
               </Card>
-              
-              <Card className="border-0 shadow-lg text-center">
+
+              <Card className="text-center border-0 shadow-lg">
                 <CardContent className="p-6">
                   <div className="w-16 h-16 bg-ubg-orange-500 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <span className="text-white text-xl font-bold">24h</span>
+                    <span className="text-2xl font-bold text-white">0€</span>
                   </div>
-                  <h3 className="text-lg font-bold text-ubg-gray-900 mb-2">Réponse Rapide</h3>
-                  <p className="text-ubg-gray-600">Réponse garantie sous 24h ouvrées</p>
+                  <h3 className="font-bold text-ubg-gray-900 mb-2">Devis Gratuit</h3>
+                  <p className="text-ubg-gray-600 text-sm">
+                    Votre devis est entièrement gratuit et sans engagement
+                  </p>
                 </CardContent>
               </Card>
-              
-              <Card className="border-0 shadow-lg text-center">
+
+              <Card className="text-center border-0 shadow-lg">
                 <CardContent className="p-6">
                   <div className="w-16 h-16 bg-ubg-orange-500 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <span className="text-white text-xl font-bold">★</span>
+                    <span className="text-2xl font-bold text-white">✓</span>
                   </div>
-                  <h3 className="text-lg font-bold text-ubg-gray-900 mb-2">Sur Mesure</h3>
-                  <p className="text-ubg-gray-600">Devis personnalisé selon vos besoins</p>
+                  <h3 className="font-bold text-ubg-gray-900 mb-2">Sur Mesure</h3>
+                  <p className="text-ubg-gray-600 text-sm">
+                    Chaque devis est personnalisé selon vos besoins spécifiques
+                  </p>
                 </CardContent>
               </Card>
             </div>

@@ -1,18 +1,20 @@
 
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Phone, Mail, Menu, X } from 'lucide-react';
+import { Phone, Mail, Menu, X, Settings } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useAdmin } from '@/contexts/AdminContext';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { siteSettings } = useAdmin();
 
   const handleWhatsApp = () => {
-    window.open('https://wa.me/33123456789', '_blank');
+    window.open(siteSettings.whatsapp, '_blank');
   };
 
   const handlePhone = () => {
-    window.open('tel:+33123456789', '_blank');
+    window.open(`tel:${siteSettings.phone}`, '_blank');
   };
 
   return (
@@ -23,15 +25,20 @@ const Header = () => {
           <div className="flex items-center space-x-4">
             <button onClick={handlePhone} className="flex items-center space-x-1 hover:text-ubg-orange-100 transition-colors">
               <Phone size={14} />
-              <span>+33 1 23 45 67 89</span>
+              <span>{siteSettings.phone}</span>
             </button>
             <button onClick={handleWhatsApp} className="flex items-center space-x-1 hover:text-ubg-orange-100 transition-colors">
               <Mail size={14} />
               <span>WhatsApp</span>
             </button>
           </div>
-          <div className="hidden md:block">
+          <div className="hidden md:flex items-center space-x-4">
             <span>Bâtiment • Travaux Publics • Géomatique</span>
+            <Link to="/admin/login">
+              <Button variant="ghost" size="sm" className="text-white hover:text-ubg-orange-100 hover:bg-ubg-orange-600 p-1">
+                <Settings size={16} />
+              </Button>
+            </Link>
           </div>
         </div>
       </div>
@@ -42,8 +49,8 @@ const Header = () => {
           {/* Logo */}
           <Link to="/" className="flex items-center">
             <img 
-              src="/lovable-uploads/aecf2a1e-ca1c-4c7d-82df-341c4b5a917f.png" 
-              alt="Univers Bâti Groupe" 
+              src={siteSettings.logo}
+              alt={siteSettings.companyName}
               className="h-12 w-auto"
             />
           </Link>
@@ -98,6 +105,10 @@ const Header = () => {
                 <Button className="bg-ubg-orange-500 hover:bg-ubg-orange-600 text-white w-full">
                   Demander un Devis
                 </Button>
+              </Link>
+              <Link to="/admin/login" className="text-ubg-gray-700 hover:text-ubg-orange-500 font-medium flex items-center">
+                <Settings size={16} className="mr-2" />
+                Administration
               </Link>
             </div>
           </div>
