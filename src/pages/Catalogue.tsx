@@ -4,8 +4,10 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { useAdmin } from '@/contexts/AdminContext';
 
 const Catalogue = () => {
+  const { projects } = useAdmin();
   const [selectedCategory, setSelectedCategory] = useState('tous');
 
   const categories = [
@@ -15,69 +17,6 @@ const Catalogue = () => {
     { id: 'finition', label: 'Finition' },
     { id: 'travaux-publics', label: 'Travaux Publics' },
     { id: 'geomatique', label: 'Géomatique' }
-  ];
-
-  const projects = [
-    {
-      id: 1,
-      title: "Construction Résidence Les Jardins",
-      category: "gros-oeuvre",
-      location: "Paris 15ème",
-      year: "2023",
-      description: "Construction complète d'une résidence de 24 logements avec parkings souterrains.",
-      image: "https://images.unsplash.com/photo-1487958449943-2429e8be8625?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-      details: ["Surface: 2,400 m²", "24 logements", "Parking 30 places", "Espaces verts"]
-    },
-    {
-      id: 2,
-      title: "Rénovation Hôtel Particulier",
-      category: "second-oeuvre",
-      location: "Neuilly-sur-Seine",
-      year: "2023",
-      description: "Rénovation complète d'un hôtel particulier du 19ème siècle.",
-      image: "https://images.unsplash.com/photo-1518005020951-eccb494ad742?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-      details: ["Surface: 450 m²", "5 chambres", "Système domotique", "Matériaux nobles"]
-    },
-    {
-      id: 3,
-      title: "Aménagement Bureau Design",
-      category: "finition",
-      location: "La Défense",
-      year: "2024",
-      description: "Aménagement moderne d'espaces de bureaux avec finitions haut de gamme.",
-      image: "https://images.unsplash.com/photo-1496307653780-42ee777d4833?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-      details: ["Surface: 1,200 m²", "200 postes de travail", "Salles de réunion", "Espace détente"]
-    },
-    {
-      id: 4,
-      title: "Aménagement Voirie Municipale",
-      category: "travaux-publics",
-      location: "Versailles",
-      year: "2023",
-      description: "Réfection complète de la voirie avec création d'espaces verts.",
-      image: "https://images.unsplash.com/photo-1449157291145-7efd050a4d0e?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-      details: ["2 km de voirie", "Éclairage LED", "Pistes cyclables", "Mobilier urbain"]
-    },
-    {
-      id: 5,
-      title: "Relevé Topographique Zone Industrielle",
-      category: "geomatique",
-      location: "Roissy",
-      year: "2024",
-      description: "Relevé précis et modélisation 3D d'une zone industrielle de 50 hectares.",
-      image: "https://images.unsplash.com/photo-1459767129954-1b1c1f9b9ace?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-      details: ["50 hectares", "Précision centimétrique", "Modèle 3D", "Cartographie numérique"]
-    },
-    {
-      id: 6,
-      title: "Villa Contemporaine",
-      category: "gros-oeuvre",
-      location: "Saint-Germain-en-Laye",
-      year: "2023",
-      description: "Construction d'une villa contemporaine avec piscine et dépendances.",
-      image: "https://images.unsplash.com/photo-1460574283810-2aab119d8511?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-      details: ["Surface: 280 m²", "4 chambres", "Piscine 12x6m", "Garage double"]
-    }
   ];
 
   const filteredProjects = selectedCategory === 'tous' 

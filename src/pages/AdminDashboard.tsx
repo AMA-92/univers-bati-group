@@ -44,54 +44,20 @@ interface Project {
 }
 
 const AdminDashboard = () => {
-  const { isAdminLoggedIn, siteSettings, logout, updateSiteSettings } = useAdmin();
+  const { 
+    isAdminLoggedIn, 
+    siteSettings, 
+    projects,
+    logout, 
+    updateSiteSettings,
+    addProject,
+    updateProject,
+    deleteProject 
+  } = useAdmin();
   const { toast } = useToast();
   const navigate = useNavigate();
   
   const [formData, setFormData] = useState(siteSettings);
-  const [projects, setProjects] = useState<Project[]>([
-    {
-      id: 1,
-      title: "Construction Résidence Les Jardins",
-      category: "gros-oeuvre",
-      location: "Paris 15ème",
-      year: "2023",
-      description: "Construction complète d'une résidence de 24 logements avec parkings souterrains.",
-      image: "https://images.unsplash.com/photo-1487958449943-2429e8be8625?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-      details: ["Surface: 2,400 m²", "24 logements", "Parking 30 places", "Espaces verts"]
-    },
-    {
-      id: 2,
-      title: "Rénovation Hôtel Particulier",
-      category: "second-oeuvre",
-      location: "Neuilly-sur-Seine",
-      year: "2023",
-      description: "Rénovation complète d'un hôtel particulier du 19ème siècle.",
-      image: "https://images.unsplash.com/photo-1518005020951-eccb494ad742?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-      details: ["Surface: 450 m²", "5 chambres", "Système domotique", "Matériaux nobles"]
-    },
-    {
-      id: 3,
-      title: "Aménagement Bureau Design",
-      category: "finition",
-      location: "La Défense",
-      year: "2024",
-      description: "Aménagement moderne d'espaces de bureaux avec finitions haut de gamme.",
-      image: "https://images.unsplash.com/photo-1496307653780-42ee777d4833?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-      details: ["Surface: 1,200 m²", "200 postes de travail", "Salles de réunion", "Espace détente"]
-    },
-    {
-      id: 4,
-      title: "Relevé Topographique Zone Industrielle",
-      category: "geomatique",
-      location: "Roissy",
-      year: "2024",
-      description: "Relevé précis et modélisation 3D d'une zone industrielle de 50 hectares.",
-      image: "https://images.unsplash.com/photo-1459767129954-1b1c1f9b9ace?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-      details: ["50 hectares", "Précision centimétrique", "Modèle 3D", "Cartographie numérique"]
-    }
-  ]);
-
   const [editingProject, setEditingProject] = useState<Project | null>(null);
   const [isAddingProject, setIsAddingProject] = useState(false);
   const [newProject, setNewProject] = useState<Omit<Project, 'id'>>({
@@ -134,8 +100,7 @@ const AdminDashboard = () => {
   };
 
   const handleAddProject = () => {
-    const id = Math.max(...projects.map(p => p.id)) + 1;
-    setProjects(prev => [...prev, { ...newProject, id }]);
+    addProject(newProject);
     setNewProject({
       title: '',
       category: 'gros-oeuvre',
@@ -158,7 +123,7 @@ const AdminDashboard = () => {
 
   const handleUpdateProject = () => {
     if (editingProject) {
-      setProjects(prev => prev.map(p => p.id === editingProject.id ? editingProject : p));
+      updateProject(editingProject);
       setEditingProject(null);
       toast({
         title: "Projet modifié",
@@ -168,7 +133,7 @@ const AdminDashboard = () => {
   };
 
   const handleDeleteProject = (id: number) => {
-    setProjects(prev => prev.filter(p => p.id !== id));
+    deleteProject(id);
     toast({
       title: "Projet supprimé",
       description: "Le projet a été supprimé avec succès",

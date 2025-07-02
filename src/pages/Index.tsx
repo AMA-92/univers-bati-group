@@ -5,14 +5,17 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Link } from 'react-router-dom';
 import { Phone, Mail } from 'lucide-react';
+import { useAdmin } from '@/contexts/AdminContext';
 
 const Index = () => {
+  const { siteSettings } = useAdmin();
+
   const handleWhatsApp = () => {
-    window.open('https://wa.me/33123456789', '_blank');
+    window.open(siteSettings.whatsapp, '_blank');
   };
 
   const handlePhone = () => {
-    window.open('tel:+33123456789', '_blank');
+    window.open(`tel:${siteSettings.phone}`, '_blank');
   };
 
   const services = [
@@ -53,7 +56,7 @@ const Index = () => {
         <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-4xl mx-auto text-center text-white">
             <h1 className="text-5xl md:text-6xl font-bold mb-6 animate-fade-in">
-              Univers Bâti Groupe
+              {siteSettings.companyName}
             </h1>
             <p className="text-xl md:text-2xl mb-8 opacity-90">
               Votre partenaire de confiance pour tous vos projets de construction
