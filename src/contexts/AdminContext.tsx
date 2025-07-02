@@ -1,4 +1,3 @@
-
 import { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 
 interface SiteSettings {
@@ -23,16 +22,37 @@ interface Project {
   details: string[];
 }
 
+interface QuoteRequest {
+  id: number;
+  nom: string;
+  prenom: string;
+  email: string;
+  telephone: string;
+  adresse: string;
+  ville: string;
+  codePostal: string;
+  typeProjet: string;
+  surface: string;
+  budget: string;
+  delai: string;
+  description: string;
+  dateCreated: string;
+  status: 'pending' | 'confirmed' | 'responded';
+}
+
 interface AdminContextType {
   isAdminLoggedIn: boolean;
   siteSettings: SiteSettings;
   projects: Project[];
+  quoteRequests: QuoteRequest[];
   login: (username: string, password: string) => boolean;
   logout: () => void;
   updateSiteSettings: (settings: Partial<SiteSettings>) => void;
   addProject: (project: Omit<Project, 'id'>) => void;
   updateProject: (project: Project) => void;
   deleteProject: (id: number) => void;
+  addQuoteRequest: (request: Omit<QuoteRequest, 'id' | 'dateCreated' | 'status'>) => void;
+  updateQuoteRequestStatus: (id: number, status: QuoteRequest['status']) => void;
 }
 
 const AdminContext = createContext<AdminContextType | undefined>(undefined);
@@ -101,11 +121,13 @@ export const AdminProvider = ({ children }: { children: ReactNode }) => {
     logo: '/lovable-uploads/aecf2a1e-ca1c-4c7d-82df-341c4b5a917f.png'
   });
   const [projects, setProjects] = useState<Project[]>(defaultProjects);
+  const [quoteRequests, setQuoteRequests] = useState<QuoteRequest[]>([]);
 
   // Charger les données sauvegardées au démarrage
   useEffect(() => {
     const savedSettings = localStorage.getItem('siteSettings');
     const savedProjects = localStorage.getItem('projects');
+    const savedQuoteRequests = localStorage.getItem('quoteRequests');
     const adminLoggedIn = localStorage.getItem('adminLoggedIn');
 
     if (savedSettings) {
@@ -114,6 +136,10 @@ export const AdminProvider = ({ children }: { children: ReactNode }) => {
 
     if (savedProjects) {
       setProjects(JSON.parse(savedProjects));
+    }
+
+    if (savedQuoteRequests) {
+      setQuoteRequests(JSON.parse(savedQuoteRequests));
     }
 
     if (adminLoggedIn === 'true') {
@@ -161,17 +187,39 @@ export const AdminProvider = ({ children }: { children: ReactNode }) => {
     localStorage.setItem('projects', JSON.stringify(updatedProjects));
   };
 
+  const addQuoteRequest = (newRequest: Omit<QuoteRequest, 'id' | 'dateCreated' | 'status'>) => {
+    const id = Math.max(...quoteRequests.map(q => q.id), 0) + 1;
+    const requestWithId: QuoteRequest = { 
+      ...newRequest, 
+      id, 
+      dateCreated: new Date().toISOString(),
+      status: 'pending'
+    };
+    const updatedRequests = [...quoteRequests, requestWithId];
+    setQuoteRequests(updatedRequests);
+    localStorage.setItem('quoteRequests', JSON.stringify(updatedRequests));
+  };
+
+  const updateQuoteRequestStatus = (id: number, status: QuoteRequest['status']) => {
+    const updatedRequests = quoteRequests.map(q => q.id === id ? { ...q, status } : q);
+    setQuoteRequests(updatedRequests);
+    localStorage.setItem('quoteRequests', JSON.stringify(updatedRequests));
+  };
+
   return (
     <AdminContext.Provider value={{
       isAdminLoggedIn,
       siteSettings,
       projects,
+      quoteRequests,
       login,
       logout,
       updateSiteSettings,
       addProject,
       updateProject,
-      deleteProject
+      deleteProject,
+      addQuoteRequest,
+      updateQuoteRequestStatus
     }}>
       {children}
     </AdminContext.Provider>

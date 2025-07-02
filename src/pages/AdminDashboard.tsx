@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -7,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Badge } from '@/components/ui/badge';
 import { 
   Table,
   TableBody,
@@ -29,7 +29,11 @@ import {
   FolderOpen,
   Plus,
   Edit,
-  Trash
+  Trash,
+  FileText,
+  CheckCircle,
+  Clock,
+  MessageSquare
 } from 'lucide-react';
 
 interface Project {
@@ -48,11 +52,13 @@ const AdminDashboard = () => {
     isAdminLoggedIn, 
     siteSettings, 
     projects,
+    quoteRequests,
     logout, 
     updateSiteSettings,
     addProject,
     updateProject,
-    deleteProject 
+    deleteProject,
+    updateQuoteRequestStatus
   } = useAdmin();
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -138,6 +144,37 @@ const AdminDashboard = () => {
       title: "Projet supprimé",
       description: "Le projet a été supprimé avec succès",
     });
+  };
+
+  const handleQuoteStatusUpdate = (id: number, status: 'confirmed' | 'responded') => {
+    updateQuoteRequestStatus(id, status);
+    toast({
+      title: "Statut mis à jour",
+      description: `La demande de devis a été marquée comme ${status === 'confirmed' ? 'confirmée' : 'répondue'}`,
+    });
+  };
+
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('fr-FR', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  };
+
+  const getStatusBadge = (status: string) => {
+    switch (status) {
+      case 'pending':
+        return <Badge variant="secondary" className="bg-yellow-100 text-yellow-800"><Clock size={12} className="mr-1" />En attente</Badge>;
+      case 'confirmed':
+        return <Badge variant="secondary" className="bg-green-100 text-green-800"><CheckCircle size={12} className="mr-1" />Confirmé</Badge>;
+      case 'responded':
+        return <Badge variant="secondary" className="bg-blue-100 text-blue-800"><MessageSquare size={12} className="mr-1" />Répondu</Badge>;
+      default:
+        return <Badge variant="secondary">Inconnu</Badge>;
+    }
   };
 
   const categories = [
@@ -326,22 +363,26 @@ const AdminDashboard = () => {
             </CardContent>
           </Card>
 
-          {/* Gestion des Catalogues */}
+          {/* Gestion des Catalogues et Demandes de Devis */}
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
                 <FolderOpen size={20} />
-                <span>Gestion des Catalogues</span>
+                <span>Gestion des Catalogues et Demandes</span>
               </CardTitle>
             </CardHeader>
             <CardContent>
               <Tabs defaultValue="gros-oeuvre" className="w-full">
-                <TabsList className="grid w-full grid-cols-4">
+                <TabsList className="grid w-full grid-cols-5">
                   {categories.map((category) => (
                     <TabsTrigger key={category.id} value={category.id}>
                       {category.label}
                     </TabsTrigger>
                   ))}
+                  <TabsTrigger value="devis">
+                    <FileText size={16} className="mr-2" />
+                    Demandes de Devis
+                  </TabsTrigger>
                 </TabsList>
                 
                 {categories.map((category) => (
@@ -399,6 +440,117 @@ const AdminDashboard = () => {
                     </Table>
                   </TabsContent>
                 ))}
+
+                {/* Onglet Demandes de Devis */}
+                <TabsContent value="devis" className="space-y-4">
+                  <div className="flex justify-between items-center">
+                    <h3 className="text-lg font-semibold">Demandes de Devis ({quoteRequests.length})</h3>
+                  </div>
+                  
+                  {quoteRequests.length === 0 ? (
+                    <div className="text-center py-8 text-ubg-gray-500">
+                      <FileText size={48} className="mx-auto mb-4 opacity-50" />
+                      <p>Aucune demande de devis pour le moment</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-4">
+                      {quoteRequests.map((request) => (
+                        <Card key={request.id} className="border-l-4 border-l-ubg-orange-500">
+                          <CardContent className="p-6">
+                            <div className="flex justify-between items-start mb-4">
+                              <div>
+                                <h4 className="text-lg font-semibold text-ubg-gray-900">
+                                  {request.prenom} {request.nom}
+                                </h4>
+                                <p className="text-ubg-gray-600">{request.email} • {request.telephone}</p>
+                                <p className="text-sm text-ubg-gray-500 mt-1">
+                                  Demandé le {formatDate(request.dateCreated)}
+                                </p>
+                              </div>
+                              <div className="flex items-center space-x-2">
+                                {getStatusBadge(request.status)}
+                              </div>
+                            </div>
+
+                            <div className="grid md:grid-cols-2 gap-6 mb-4">
+                              <div>
+                                <h5 className="font-medium text-ubg-gray-900 mb-2">Projet</h5>
+                                <p className="text-sm text-ubg-gray-600 mb-1">
+                                  <strong>Type:</strong> {request.typeProjet}
+                                </p>
+                                {request.surface && (
+                                  <p className="text-sm text-ubg-gray-600 mb-1">
+                                    <strong>Surface:</strong> {request.surface} m²
+                                  </p>
+                                )}
+                                {request.budget && (
+                                  <p className="text-sm text-ubg-gray-600 mb-1">
+                                    <strong>Budget:</strong> {request.budget}
+                                  </p>
+                                )}
+                                {request.delai && (
+                                  <p className="text-sm text-ubg-gray-600">
+                                    <strong>Délai:</strong> {request.delai}
+                                  </p>
+                                )}
+                              </div>
+                              <div>
+                                <h5 className="font-medium text-ubg-gray-900 mb-2">Localisation</h5>
+                                <p className="text-sm text-ubg-gray-600">
+                                  {request.adresse}<br />
+                                  {request.codePostal} {request.ville}
+                                </p>
+                              </div>
+                            </div>
+
+                            {request.description && (
+                              <div className="mb-4">
+                                <h5 className="font-medium text-ubg-gray-900 mb-2">Description</h5>
+                                <p className="text-sm text-ubg-gray-600 bg-ubg-gray-50 p-3 rounded">
+                                  {request.description}
+                                </p>
+                              </div>
+                            )}
+
+                            <div className="flex space-x-2">
+                              {request.status === 'pending' && (
+                                <>
+                                  <Button 
+                                    size="sm"
+                                    onClick={() => handleQuoteStatusUpdate(request.id, 'confirmed')}
+                                    className="bg-green-600 hover:bg-green-700"
+                                  >
+                                    <CheckCircle size={14} className="mr-1" />
+                                    Confirmer
+                                  </Button>
+                                  <Button 
+                                    size="sm"
+                                    variant="outline"
+                                    onClick={() => window.open(`mailto:${request.email}?subject=Réponse à votre demande de devis&body=Bonjour ${request.prenom},\n\nNous avons bien reçu votre demande de devis concernant votre projet de ${request.typeProjet}.\n\nCordialement,\nUnivers Bâti Groupe`)}
+                                  >
+                                    <Mail size={14} className="mr-1" />
+                                    Répondre par email
+                                  </Button>
+                                </>
+                              )}
+                              {request.status === 'confirmed' && (
+                                <Button 
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => handleQuoteStatusUpdate(request.id, 'responded')}
+                                  className="border-blue-500 text-blue-500 hover:bg-blue-50"
+                                >
+                                  <MessageSquare size={14} className="mr-1" />
+                                  Marquer comme répondu
+                                </Button>
+                              )}
+                            </div>
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+                  )}
+                </TabsContent>
               </Tabs>
             </CardContent>
           </Card>

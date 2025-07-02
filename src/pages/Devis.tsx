@@ -10,9 +10,11 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useToast } from '@/hooks/use-toast';
+import { useAdmin } from '@/contexts/AdminContext';
 
 const Devis = () => {
   const { toast } = useToast();
+  const { addQuoteRequest } = useAdmin();
   const [formData, setFormData] = useState({
     nom: '',
     prenom: '',
@@ -48,7 +50,22 @@ const Devis = () => {
       return;
     }
 
-    // Simulation de l'envoi du devis
+    // Sauvegarder la demande de devis
+    addQuoteRequest({
+      nom: formData.nom,
+      prenom: formData.prenom,
+      email: formData.email,
+      telephone: formData.telephone,
+      adresse: formData.adresse,
+      ville: formData.ville,
+      codePostal: formData.codePostal,
+      typeProjet: formData.typeProjet,
+      surface: formData.surface,
+      budget: formData.budget,
+      delai: formData.delai,
+      description: formData.description
+    });
+
     toast({
       title: "Demande envoyée",
       description: "Votre demande de devis a été envoyée avec succès. Nous vous recontacterons sous 48h.",
@@ -85,12 +102,12 @@ const Devis = () => {
   ];
 
   const budgetRanges = [
-    'Moins de 10 000€',
-    '10 000€ - 25 000€',
-    '25 000€ - 50 000€',
-    '50 000€ - 100 000€',
-    '100 000€ - 200 000€',
-    'Plus de 200 000€'
+    'Moins de 500 000 FCFA',
+    '500 000 - 1 250 000 FCFA',
+    '1 250 000 - 2 500 000 FCFA',
+    '2 500 000 - 5 000 000 FCFA',
+    '5 000 000 - 10 000 000 FCFA',
+    'Plus de 10 000 000 FCFA'
   ];
 
   return (
