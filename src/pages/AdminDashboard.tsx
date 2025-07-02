@@ -12,6 +12,23 @@ import {
 import { Badge } from "@/components/ui/badge"
 import { Link } from 'react-router-dom';
 
+interface QuoteRequest {
+  id: string;
+  nom: string;
+  prenom: string;
+  email: string;
+  telephone: string;
+  adresse: string;
+  ville: string;
+  codePostal: string;
+  typeProjet: string;
+  surface: string;
+  delai: string;
+  description: string;
+  dateCreated: string;
+  status: 'pending' | 'confirmed' | 'responded';
+}
+
 const AdminDashboard = () => {
   const { isAdminLoggedIn, logout, quoteRequests, updateQuoteRequestStatus } = useAdmin();
   const [loading, setLoading] = useState(true);

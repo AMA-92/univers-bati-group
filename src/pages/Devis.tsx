@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -322,7 +321,7 @@ const Devis = () => {
               <Card className="text-center border-0 shadow-lg">
                 <CardContent className="p-6">
                   <div className="w-16 h-16 bg-ubg-orange-500 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <span className="text-2xl font-bold text-white">0€</span>
+                    <span className="text-xl font-bold text-white">0 FCFA</span>
                   </div>
                   <h3 className="font-bold text-ubg-gray-900 mb-2">Devis Gratuit</h3>
                   <p className="text-ubg-gray-600 text-sm">
