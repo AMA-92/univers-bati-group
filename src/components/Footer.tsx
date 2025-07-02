@@ -78,6 +78,7 @@ const Footer = () => {
 
         <div className="border-t border-ubg-gray-700 mt-8 pt-8 text-center text-ubg-gray-400">
           <p>&copy; 2024 {siteSettings.companyName}. Tous droits réservés.</p>
+          <p className="mt-2 text-sm">Devis gratuit - 0 FCFA</p>
         </div>
       </div>
     </footer>
