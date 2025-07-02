@@ -1,3 +1,4 @@
+
 import { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 
 interface SiteSettings {
@@ -33,7 +34,6 @@ interface QuoteRequest {
   codePostal: string;
   typeProjet: string;
   surface: string;
-  budget: string;
   delai: string;
   description: string;
   dateCreated: string;

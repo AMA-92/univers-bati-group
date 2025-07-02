@@ -25,7 +25,6 @@ const Devis = () => {
     codePostal: '',
     typeProjet: '',
     surface: '',
-    budget: '',
     delai: '',
     description: '',
     accepteConditions: false
@@ -61,7 +60,6 @@ const Devis = () => {
       codePostal: formData.codePostal,
       typeProjet: formData.typeProjet,
       surface: formData.surface,
-      budget: formData.budget,
       delai: formData.delai,
       description: formData.description
     });
@@ -82,7 +80,6 @@ const Devis = () => {
       codePostal: '',
       typeProjet: '',
       surface: '',
-      budget: '',
       delai: '',
       description: '',
       accepteConditions: false
@@ -99,15 +96,6 @@ const Devis = () => {
     'Plomberie',
     'Électricité',
     'Autres'
-  ];
-
-  const budgetRanges = [
-    'Moins de 500 000 FCFA',
-    '500 000 - 1 250 000 FCFA',
-    '1 250 000 - 2 500 000 FCFA',
-    '2 500 000 - 5 000 000 FCFA',
-    '5 000 000 - 10 000 000 FCFA',
-    'Plus de 10 000 000 FCFA'
   ];
 
   return (
@@ -262,22 +250,7 @@ const Devis = () => {
                           className="mt-1"
                         />
                       </div>
-                      <div>
-                        <Label htmlFor="budget">Budget prévisionnel</Label>
-                        <Select value={formData.budget} onValueChange={(value) => handleInputChange('budget', value)}>
-                          <SelectTrigger className="mt-1">
-                            <SelectValue placeholder="Sélectionnez votre budget" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {budgetRanges.map((range) => (
-                              <SelectItem key={range} value={range}>
-                                {range}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
-                      <div>
+                      <div className="md:col-span-2">
                         <Label htmlFor="delai">Délai souhaité</Label>
                         <Input
                           id="delai"
