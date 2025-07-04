@@ -14,6 +14,7 @@ import { Badge } from "@/components/ui/badge"
 import { Link } from 'react-router-dom';
 import ProjectForm from '@/components/ProjectForm';
 import ProjectList from '@/components/ProjectList';
+import SiteSettingsForm from '@/components/SiteSettingsForm';
 
 interface QuoteRequest {
   id: string;
@@ -97,7 +98,7 @@ const AdminDashboard = () => {
           variant={activeTab === 'settings' ? 'default' : 'outline'}
           onClick={() => setActiveTab('settings')}
         >
-          Paramètres
+          Paramètres du Site
         </Button>
       </div>
 
@@ -183,8 +184,7 @@ const AdminDashboard = () => {
 
       {activeTab === 'settings' && (
         <section>
-          <h2 className="text-2xl font-semibold mb-4">Gestion des Paramètres du Site</h2>
-          <p>Ici, vous pourrez modifier les informations générales du site (en cours de développement).</p>
+          <SiteSettingsForm />
         </section>
       )}
     </div>
