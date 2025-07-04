@@ -8,7 +8,7 @@ import { Edit, Trash2, Eye } from 'lucide-react';
 
 const ProjectList = () => {
   const { projects, deleteProject } = useAdmin();
-  const [expandedProject, setExpandedProject] = useState<number | null>(null);
+  const [expandedProject, setExpandedProject] = useState<string | null>(null);
 
   const getCategoryLabel = (category: string) => {
     const categories: { [key: string]: string } = {
@@ -21,13 +21,17 @@ const ProjectList = () => {
     return categories[category] || category;
   };
 
-  const handleDelete = (id: number) => {
+  const handleDelete = async (id: string) => {
     if (window.confirm('Êtes-vous sûr de vouloir supprimer ce projet ?')) {
-      deleteProject(id);
+      try {
+        await deleteProject(id);
+      } catch (error) {
+        alert('Erreur lors de la suppression du projet');
+      }
     }
   };
 
-  const toggleExpanded = (id: number) => {
+  const toggleExpanded = (id: string) => {
     setExpandedProject(expandedProject === id ? null : id);
   };
 

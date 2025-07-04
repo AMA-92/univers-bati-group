@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -21,6 +20,7 @@ interface ProjectFormProps {
 
 const ProjectForm = ({ onSuccess }: ProjectFormProps) => {
   const { addProject } = useAdmin();
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     title: '',
     category: '',
@@ -94,7 +94,7 @@ const ProjectForm = ({ onSuccess }: ProjectFormProps) => {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!formData.title || !formData.category || !formData.description) {
@@ -102,28 +102,36 @@ const ProjectForm = ({ onSuccess }: ProjectFormProps) => {
       return;
     }
 
-    const filteredDetails = formData.details.filter(detail => detail.trim() !== '');
-    
-    addProject({
-      ...formData,
-      details: filteredDetails.length > 0 ? filteredDetails : ['Aucun détail spécifique']
-    });
+    setIsSubmitting(true);
 
-    // Réinitialiser le formulaire
-    setFormData({
-      title: '',
-      category: '',
-      location: '',
-      year: new Date().getFullYear().toString(),
-      description: '',
-      image: '',
-      details: ['']
-    });
-    setImageFile(null);
-    setImagePreview(null);
+    try {
+      const filteredDetails = formData.details.filter(detail => detail.trim() !== '');
+      
+      await addProject({
+        ...formData,
+        details: filteredDetails.length > 0 ? filteredDetails : ['Aucun détail spécifique']
+      });
 
-    if (onSuccess) {
-      onSuccess();
+      // Réinitialiser le formulaire
+      setFormData({
+        title: '',
+        category: '',
+        location: '',
+        year: new Date().getFullYear().toString(),
+        description: '',
+        image: '',
+        details: ['']
+      });
+      setImageFile(null);
+      setImagePreview(null);
+
+      if (onSuccess) {
+        onSuccess();
+      }
+    } catch (error) {
+      alert('Erreur lors de l\'ajout du projet');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -143,6 +151,7 @@ const ProjectForm = ({ onSuccess }: ProjectFormProps) => {
                 onChange={(e) => handleInputChange('title', e.target.value)}
                 placeholder="Ex: Construction Résidence..."
                 required
+                disabled={isSubmitting}
               />
             </div>
 
@@ -151,6 +160,7 @@ const ProjectForm = ({ onSuccess }: ProjectFormProps) => {
               <Select
                 value={formData.category}
                 onValueChange={(value) => handleInputChange('category', value)}
+                disabled={isSubmitting}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Sélectionner une catégorie" />
@@ -172,6 +182,7 @@ const ProjectForm = ({ onSuccess }: ProjectFormProps) => {
                 value={formData.location}
                 onChange={(e) => handleInputChange('location', e.target.value)}
                 placeholder="Ex: Paris 15ème"
+                disabled={isSubmitting}
               />
             </div>
 
@@ -182,6 +193,7 @@ const ProjectForm = ({ onSuccess }: ProjectFormProps) => {
                 value={formData.year}
                 onChange={(e) => handleInputChange('year', e.target.value)}
                 placeholder="Ex: 2024"
+                disabled={isSubmitting}
               />
             </div>
           </div>
@@ -195,6 +207,7 @@ const ProjectForm = ({ onSuccess }: ProjectFormProps) => {
               placeholder="Description détaillée du projet..."
               rows={3}
               required
+              disabled={isSubmitting}
             />
           </div>
 
@@ -205,7 +218,7 @@ const ProjectForm = ({ onSuccess }: ProjectFormProps) => {
                 <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
                   <Upload className="mx-auto h-12 w-12 text-gray-400 mb-4" />
                   <Label htmlFor="image-upload" className="cursor-pointer">
-                    <Button type="button" variant="outline" asChild>
+                    <Button type="button" variant="outline" asChild disabled={isSubmitting}>
                       <span>Parcourir l'image</span>
                     </Button>
                   </Label>
@@ -215,6 +228,7 @@ const ProjectForm = ({ onSuccess }: ProjectFormProps) => {
                     accept="image/*"
                     onChange={handleImageChange}
                     className="hidden"
+                    disabled={isSubmitting}
                   />
                   <p className="text-sm text-gray-500 mt-2">
                     PNG, JPG, GIF jusqu'à 10MB
@@ -233,6 +247,7 @@ const ProjectForm = ({ onSuccess }: ProjectFormProps) => {
                     size="sm"
                     className="absolute top-2 right-2"
                     onClick={removeImage}
+                    disabled={isSubmitting}
                   >
                     <X size={16} />
                   </Button>
@@ -250,6 +265,7 @@ const ProjectForm = ({ onSuccess }: ProjectFormProps) => {
                     value={detail}
                     onChange={(e) => handleDetailChange(index, e.target.value)}
                     placeholder={`Détail ${index + 1}`}
+                    disabled={isSubmitting}
                   />
                   {formData.details.length > 1 && (
                     <Button
@@ -257,6 +273,7 @@ const ProjectForm = ({ onSuccess }: ProjectFormProps) => {
                       variant="outline"
                       size="sm"
                       onClick={() => removeDetail(index)}
+                      disabled={isSubmitting}
                     >
                       <X size={16} />
                     </Button>
@@ -268,14 +285,15 @@ const ProjectForm = ({ onSuccess }: ProjectFormProps) => {
                 variant="outline"
                 size="sm"
                 onClick={addDetail}
+                disabled={isSubmitting}
               >
                 Ajouter un détail
               </Button>
             </div>
           </div>
 
-          <Button type="submit" className="w-full">
-            Ajouter le Projet
+          <Button type="submit" className="w-full" disabled={isSubmitting}>
+            {isSubmitting ? 'Ajout en cours...' : 'Ajouter le Projet'}
           </Button>
         </form>
       </CardContent>

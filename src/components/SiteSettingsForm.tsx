@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -26,7 +25,7 @@ const SiteSettingsForm = () => {
     setSaveMessage('');
 
     try {
-      updateSiteSettings(formData);
+      await updateSiteSettings(formData);
       setSaveMessage('Paramètres sauvegardés avec succès !');
       setTimeout(() => setSaveMessage(''), 3000);
     } catch (error) {
@@ -58,6 +57,7 @@ const SiteSettingsForm = () => {
                   value={formData.companyName}
                   onChange={(e) => handleInputChange('companyName', e.target.value)}
                   placeholder="Nom de votre entreprise"
+                  disabled={isSaving}
                 />
               </div>
 
@@ -68,6 +68,7 @@ const SiteSettingsForm = () => {
                   value={formData.phone}
                   onChange={(e) => handleInputChange('phone', e.target.value)}
                   placeholder="+33 1 23 45 67 89"
+                  disabled={isSaving}
                 />
               </div>
 
@@ -79,6 +80,7 @@ const SiteSettingsForm = () => {
                   value={formData.email}
                   onChange={(e) => handleInputChange('email', e.target.value)}
                   placeholder="contact@exemple.fr"
+                  disabled={isSaving}
                 />
               </div>
 
@@ -89,6 +91,7 @@ const SiteSettingsForm = () => {
                   value={formData.whatsapp}
                   onChange={(e) => handleInputChange('whatsapp', e.target.value)}
                   placeholder="https://wa.me/33123456789"
+                  disabled={isSaving}
                 />
               </div>
             </div>
@@ -104,6 +107,7 @@ const SiteSettingsForm = () => {
                   value={formData.address}
                   onChange={(e) => handleInputChange('address', e.target.value)}
                   placeholder="123 Avenue de la Construction"
+                  disabled={isSaving}
                 />
               </div>
 
@@ -115,6 +119,7 @@ const SiteSettingsForm = () => {
                     value={formData.city}
                     onChange={(e) => handleInputChange('city', e.target.value)}
                     placeholder="Paris"
+                    disabled={isSaving}
                   />
                 </div>
 
@@ -125,6 +130,7 @@ const SiteSettingsForm = () => {
                     value={formData.postalCode}
                     onChange={(e) => handleInputChange('postalCode', e.target.value)}
                     placeholder="75001"
+                    disabled={isSaving}
                   />
                 </div>
               </div>
@@ -136,6 +142,7 @@ const SiteSettingsForm = () => {
                   value={formData.logo}
                   onChange={(e) => handleInputChange('logo', e.target.value)}
                   placeholder="URL de votre logo"
+                  disabled={isSaving}
                 />
               </div>
 
@@ -183,6 +190,7 @@ const SiteSettingsForm = () => {
               type="button"
               variant="outline"
               onClick={() => setFormData(siteSettings)}
+              disabled={isSaving}
             >
               Annuler les Modifications
             </Button>

@@ -9,7 +9,141 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      projects: {
+        Row: {
+          category: string
+          created_at: string
+          description: string
+          details: Json
+          id: string
+          image: string | null
+          location: string | null
+          title: string
+          updated_at: string
+          year: string | null
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          description: string
+          details?: Json
+          id?: string
+          image?: string | null
+          location?: string | null
+          title: string
+          updated_at?: string
+          year?: string | null
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          description?: string
+          details?: Json
+          id?: string
+          image?: string | null
+          location?: string | null
+          title?: string
+          updated_at?: string
+          year?: string | null
+        }
+        Relationships: []
+      }
+      quote_requests: {
+        Row: {
+          adresse: string
+          code_postal: string
+          created_at: string
+          delai: string
+          description: string | null
+          email: string
+          id: string
+          nom: string
+          prenom: string
+          status: string
+          surface: string
+          telephone: string
+          type_projet: string
+          updated_at: string
+          ville: string
+        }
+        Insert: {
+          adresse: string
+          code_postal: string
+          created_at?: string
+          delai: string
+          description?: string | null
+          email: string
+          id?: string
+          nom: string
+          prenom: string
+          status?: string
+          surface: string
+          telephone: string
+          type_projet: string
+          updated_at?: string
+          ville: string
+        }
+        Update: {
+          adresse?: string
+          code_postal?: string
+          created_at?: string
+          delai?: string
+          description?: string | null
+          email?: string
+          id?: string
+          nom?: string
+          prenom?: string
+          status?: string
+          surface?: string
+          telephone?: string
+          type_projet?: string
+          updated_at?: string
+          ville?: string
+        }
+        Relationships: []
+      }
+      site_settings: {
+        Row: {
+          address: string | null
+          city: string | null
+          company_name: string
+          created_at: string
+          email: string | null
+          id: string
+          logo: string | null
+          phone: string | null
+          postal_code: string | null
+          updated_at: string
+          whatsapp: string | null
+        }
+        Insert: {
+          address?: string | null
+          city?: string | null
+          company_name: string
+          created_at?: string
+          email?: string | null
+          id?: string
+          logo?: string | null
+          phone?: string | null
+          postal_code?: string | null
+          updated_at?: string
+          whatsapp?: string | null
+        }
+        Update: {
+          address?: string | null
+          city?: string | null
+          company_name?: string
+          created_at?: string
+          email?: string | null
+          id?: string
+          logo?: string | null
+          phone?: string | null
+          postal_code?: string | null
+          updated_at?: string
+          whatsapp?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

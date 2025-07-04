@@ -34,16 +34,8 @@ interface QuoteRequest {
 }
 
 const AdminDashboard = () => {
-  const { isAdminLoggedIn, logout, quoteRequests, updateQuoteRequestStatus } = useAdmin();
-  const [loading, setLoading] = useState(true);
+  const { isAdminLoggedIn, logout, quoteRequests, updateQuoteRequestStatus, loading } = useAdmin();
   const [activeTab, setActiveTab] = useState<'quotes' | 'projects' | 'settings'>('quotes');
-
-  useEffect(() => {
-    // Simulate loading delay
-    setTimeout(() => {
-      setLoading(false);
-    }, 500);
-  }, []);
 
   if (!isAdminLoggedIn) {
     return (
@@ -55,7 +47,7 @@ const AdminDashboard = () => {
               Vous devez être connecté en tant qu'administrateur pour accéder à cette page.
             </p>
             <div className="mt-6 flex justify-center">
-              <Link to="/admin">
+              <Link to="/admin/login">
                 <Button variant="outline">Se Connecter</Button>
               </Link>
             </div>
@@ -72,6 +64,14 @@ const AdminDashboard = () => {
       </div>
     );
   }
+
+  const handleStatusUpdate = async (id: string, status: QuoteRequest['status']) => {
+    try {
+      await updateQuoteRequestStatus(id, status);
+    } catch (error) {
+      alert('Erreur lors de la mise à jour du statut');
+    }
+  };
 
   return (
     <div className="container mx-auto py-10">
@@ -131,7 +131,7 @@ const AdminDashboard = () => {
                         </Badge>
                         <Select
                           value={request.status}
-                          onValueChange={(value) => updateQuoteRequestStatus(request.id, value as QuoteRequest['status'])}
+                          onValueChange={(value) => handleStatusUpdate(request.id, value as QuoteRequest['status'])}
                         >
                           <SelectTrigger className="w-32">
                             <SelectValue />
